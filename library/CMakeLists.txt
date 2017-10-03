@@ -2,6 +2,11 @@ option(USE_STATIC_MBEDTLS_LIBRARY "Build mbed TLS static library." ON)
 option(USE_SHARED_MBEDTLS_LIBRARY "Build mbed TLS shared library." OFF)
 option(LINK_WITH_PTHREAD "Explicitly link mbed TLS library to pthread." OFF)
 
+file(GLOB_RECURSE src_headers
+    "*.h"
+    "../include/*.h"
+    )
+
 set(src_crypto
     aes.c
     aesni.c
@@ -56,6 +61,7 @@ set(src_crypto
     version.c
     version_features.c
     xtea.c
+
 )
 
 set(src_x509
@@ -121,17 +127,21 @@ elseif(USE_STATIC_MBEDTLS_LIBRARY)
 endif()
 
 if(USE_STATIC_MBEDTLS_LIBRARY)
-    add_library(${mbedcrypto_static_target} STATIC ${src_crypto})
+    add_library(${mbedcrypto_static_target} STATIC ${src_crypto} ${src_headers})
     set_target_properties(${mbedcrypto_static_target} PROPERTIES OUTPUT_NAME mbedcrypto)
     target_link_libraries(${mbedcrypto_static_target} ${libs})
+    target_include_directories(${mbedcrypto_static_target} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../include)
 
-    add_library(${mbedx509_static_target} STATIC ${src_x509})
+    add_library(${mbedx509_static_target} STATIC ${src_x509}  ${src_headers})
     set_target_properties(${mbedx509_static_target} PROPERTIES OUTPUT_NAME mbedx509)
     target_link_libraries(${mbedx509_static_target} ${libs} ${mbedcrypto_static_target})
+    target_include_directories(${mbedx509_static_target} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../include)
 
-    add_library(${mbedtls_static_target} STATIC ${src_tls})
+    add_library(${mbedtls_static_target} STATIC ${src_tls}  ${src_headers})
     set_target_properties(${mbedtls_static_target} PROPERTIES OUTPUT_NAME mbedtls)
     target_link_libraries(${mbedtls_static_target} ${libs} ${mbedx509_static_target})
+    target_include_directories(${mbedtls_static_target} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../include)
+
 
     install(TARGETS ${mbedtls_static_target} ${mbedx509_static_target} ${mbedcrypto_static_target}
             DESTINATION ${LIB_INSTALL_DIR}
@@ -142,14 +152,17 @@ if(USE_SHARED_MBEDTLS_LIBRARY)
     add_library(mbedcrypto SHARED ${src_crypto})
     set_target_properties(mbedcrypto PROPERTIES VERSION 2.6.0 SOVERSION 0)
     target_link_libraries(mbedcrypto ${libs})
+    target_include_directories(mbedcrypto PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../include)
 
     add_library(mbedx509 SHARED ${src_x509})
     set_target_properties(mbedx509 PROPERTIES VERSION 2.6.0 SOVERSION 0)
     target_link_libraries(mbedx509 ${libs} mbedcrypto)
+    target_include_directories(mbedx509 PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../include)
 
     add_library(mbedtls SHARED ${src_tls})
     set_target_properties(mbedtls PROPERTIES VERSION 2.6.0 SOVERSION 10)
     target_link_libraries(mbedtls ${libs} mbedx509)
+    target_include_directories(mbedtls PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../include)
 
     install(TARGETS mbedtls mbedx509 mbedcrypto
             DESTINATION ${LIB_INSTALL_DIR}

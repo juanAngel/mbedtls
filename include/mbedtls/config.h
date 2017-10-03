@@ -879,7 +879,9 @@
  *
  * Enable functions that use the filesystem.
  */
+#if defined (__linux) || defined (__WIN32) || defined (__WIN64) || defined (__APPLE__)
 #define MBEDTLS_FS_IO
+#endif
 
 /**
  * \def MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES
@@ -2063,7 +2065,9 @@
  *
  * This module provides networking routines.
  */
+#if defined (__linux) || defined (__WIN32) || defined (__WIN64) || defined (__APPLE__)
 #define MBEDTLS_NET_C
+#endif
 
 /**
  * \def MBEDTLS_OID_C
@@ -2243,6 +2247,7 @@
  *
  * This module enables abstraction of common (libc) functions.
  */
+
 #define MBEDTLS_PLATFORM_C
 
 /**
@@ -2444,7 +2449,9 @@
  *
  * This module is used by the HAVEGE random number generator.
  */
+#if defined (__linux) || defined (__WIN32) || defined (__WIN64) || defined(__APPLE__)
 #define MBEDTLS_TIMING_C
+#endif
 
 /**
  * \def MBEDTLS_VERSION_C
