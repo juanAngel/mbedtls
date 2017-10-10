@@ -56,6 +56,53 @@ set(src_crypto
     version.c
     version_features.c
     xtea.c
+
+    ../include/mbedtls/aes.h
+    ../include/mbedtls/aesni.h
+    ../include/mbedtls/arc4.h
+    ../include/mbedtls/asn1write.h
+    ../include/mbedtls/base64.h
+    ../include/mbedtls/bignum.h
+    ../include/mbedtls/blowfish.h
+    ../include/mbedtls/camellia.h
+    ../include/mbedtls/ccm.h
+    ../include/mbedtls/cipher.h
+    ../include/mbedtls/cmac.h
+    ../include/mbedtls/ctr_drbg.h
+    ../include/mbedtls/des.h
+    ../include/mbedtls/dhm.h
+    ../include/mbedtls/ecdh.h
+    ../include/mbedtls/ecdsa.h
+    ../include/mbedtls/ecjpake.h
+    ../include/mbedtls/ecp.h
+    ../include/mbedtls/entropy.h
+    ../include/mbedtls/entropy_poll.h
+    ../include/mbedtls/error.h
+    ../include/mbedtls/gcm.h
+    ../include/mbedtls/havege.h
+    ../include/mbedtls/hmac_drbg.h
+    ../include/mbedtls/md.h
+    ../include/mbedtls/md2.h
+    ../include/mbedtls/md4.h
+    ../include/mbedtls/md5.h
+    ../include/mbedtls/memory_buffer_alloc.h
+    ../include/mbedtls/oid.h
+    ../include/mbedtls/padlock.h
+    ../include/mbedtls/pem.h
+    ../include/mbedtls/pk.h
+    ../include/mbedtls/pkcs12.h
+    ../include/mbedtls/pkcs5.h
+    ../include/mbedtls/platform.h
+    ../include/mbedtls/ripemd160.h
+    ../include/mbedtls/rsa.h
+    ../include/mbedtls/sha1.h
+    ../include/mbedtls/sha256.h
+    ../include/mbedtls/sha512.h
+    ../include/mbedtls/threading.h
+    ../include/mbedtls/timing.h
+    ../include/mbedtls/version.h
+    ../include/mbedtls/xtea.h
+    ../include/mbedtls/config.h
 )
 
 set(src_x509
@@ -68,6 +115,13 @@ set(src_x509
     x509_csr.c
     x509write_crt.c
     x509write_csr.c
+
+    ../include/mbedtls/pkcs11.h
+    ../include/mbedtls/x509.h
+    ../include/mbedtls/x509_crl.h
+    ../include/mbedtls/x509_crt.h
+    ../include/mbedtls/x509_csr.h
+    ../include/mbedtls/config.h
 )
 
 set(src_tls
@@ -80,6 +134,14 @@ set(src_tls
     ssl_srv.c
     ssl_ticket.c
     ssl_tls.c
+
+    ../include/mbedtls/debug.h
+    ../include/mbedtls/net_sockets.h
+    ../include/mbedtls/ssl_cache.h
+    ../include/mbedtls/ssl_ciphersuites.h
+    ../include/mbedtls/ssl_cookie.h
+    ../include/mbedtls/ssl_ticket.h
+    ../include/mbedtls/config.h
 )
 
 if(CMAKE_COMPILER_IS_GNUCC)
@@ -124,14 +186,17 @@ if(USE_STATIC_MBEDTLS_LIBRARY)
     add_library(${mbedcrypto_static_target} STATIC ${src_crypto})
     set_target_properties(${mbedcrypto_static_target} PROPERTIES OUTPUT_NAME mbedcrypto)
     target_link_libraries(${mbedcrypto_static_target} ${libs})
+    target_include_directories(${mbedcrypto_static_target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include/)
 
     add_library(${mbedx509_static_target} STATIC ${src_x509})
     set_target_properties(${mbedx509_static_target} PROPERTIES OUTPUT_NAME mbedx509)
     target_link_libraries(${mbedx509_static_target} ${libs} ${mbedcrypto_static_target})
+    target_include_directories(${mbedx509_static_target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include/)
 
     add_library(${mbedtls_static_target} STATIC ${src_tls})
     set_target_properties(${mbedtls_static_target} PROPERTIES OUTPUT_NAME mbedtls)
     target_link_libraries(${mbedtls_static_target} ${libs} ${mbedx509_static_target})
+    target_include_directories(${mbedtls_static_target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include/)
 
     install(TARGETS ${mbedtls_static_target} ${mbedx509_static_target} ${mbedcrypto_static_target}
             DESTINATION ${LIB_INSTALL_DIR}
@@ -142,14 +207,18 @@ if(USE_SHARED_MBEDTLS_LIBRARY)
     add_library(mbedcrypto SHARED ${src_crypto})
     set_target_properties(mbedcrypto PROPERTIES VERSION 2.6.0 SOVERSION 0)
     target_link_libraries(mbedcrypto ${libs})
+    target_include_directories(mbedcrypto PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include/)
+
 
     add_library(mbedx509 SHARED ${src_x509})
     set_target_properties(mbedx509 PROPERTIES VERSION 2.6.0 SOVERSION 0)
     target_link_libraries(mbedx509 ${libs} mbedcrypto)
+    target_include_directories(mbedx509 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include/)
 
     add_library(mbedtls SHARED ${src_tls})
     set_target_properties(mbedtls PROPERTIES VERSION 2.6.0 SOVERSION 10)
     target_link_libraries(mbedtls ${libs} mbedx509)
+    target_include_directories(mbedtls PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
     install(TARGETS mbedtls mbedx509 mbedcrypto
             DESTINATION ${LIB_INSTALL_DIR}
