@@ -2124,7 +2124,11 @@
  *
  * This module provides networking routines.
  */
+#if defined(unix) || defined(__unix__) || defined(__unix) || \
+    defined(__APPLE__) || defined(_WIN32)
 #define MBEDTLS_NET_C
+
+#endif
 
 /**
  * \def MBEDTLS_OID_C
