@@ -2,6 +2,14 @@ option(USE_STATIC_MBEDTLS_LIBRARY "Build mbed TLS static library." ON)
 option(USE_SHARED_MBEDTLS_LIBRARY "Build mbed TLS shared library." OFF)
 option(LINK_WITH_PTHREAD "Explicitly link mbed TLS library to pthread." OFF)
 
+option(MBEDTLS_DES_C        "Enable DES"        OFF)
+option(MBEDTLS_CAMELLIA_C   "Enable CAMELLIA"   OFF)
+option(MBEDTLS_ARC4_C       "Enable ARC4"       OFF)
+option(MBEDTLS_BLOWFISH_C   "Enable BLOWFISH"   OFF)
+option(MBEDTLS_GCM_C        "Enable GCM Mode"   OFF)
+option(MBEDTLS_CCM_C        "Enable CCM Mode"   OFF)
+
+
 set(src_crypto
     aes.c
     aesni.c
@@ -198,6 +206,32 @@ if(USE_STATIC_MBEDTLS_LIBRARY)
     target_link_libraries(${mbedtls_static_target} ${libs} ${mbedx509_static_target})
     target_include_directories(${mbedtls_static_target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include/)
 
+
+    if(ENABLE_TESTING)
+        target_compile_definitions(mbedcrypto MBEDTLS_SELF_TEST)
+        target_compile_definitions(mbedx509 MBEDTLS_SELF_TEST)
+        target_compile_definitions(mbedtls MBEDTLS_SELF_TEST)
+    endif()
+
+    if(MBEDTLS_DES_C)
+        target_compile_definitions(${mbedcrypto_static_target} PUBLIC MBEDTLS_DES_C)
+    endif()
+    if(MBEDTLS_CAMELLIA_C)
+        target_compile_definitions(${mbedcrypto_static_target} PUBLIC MBEDTLS_CAMELLIA_C)
+    endif()
+    if(MBEDTLS_ARC4_C)
+        target_compile_definitions(${mbedcrypto_static_target} PUBLIC MBEDTLS_ARC4_C)
+    endif()
+    if(MBEDTLS_BLOWFISH_C)
+        target_compile_definitions(${mbedcrypto_static_target} PUBLIC MBEDTLS_BLOWFISH_C)
+    endif()
+    if(MBEDTLS_GCM_C)
+        target_compile_definitions(${mbedcrypto_static_target} PUBLIC MBEDTLS_GCM_C)
+    endif()
+    if(MBEDTLS_CCM_C)
+        target_compile_definitions(${mbedcrypto_static_target} PUBLIC MBEDTLS_CCM_C)
+    endif()
+
     install(TARGETS ${mbedtls_static_target} ${mbedx509_static_target} ${mbedcrypto_static_target}
             DESTINATION ${LIB_INSTALL_DIR}
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
@@ -219,6 +253,32 @@ if(USE_SHARED_MBEDTLS_LIBRARY)
     set_target_properties(mbedtls PROPERTIES VERSION 2.6.0 SOVERSION 10)
     target_link_libraries(mbedtls ${libs} mbedx509)
     target_include_directories(mbedtls PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+
+
+    if(ENABLE_TESTING)
+        target_compile_definitions(mbedcrypto MBEDTLS_SELF_TEST)
+        target_compile_definitions(mbedx509 MBEDTLS_SELF_TEST)
+        target_compile_definitions(mbedtls MBEDTLS_SELF_TEST)
+    endif()
+
+    if(MBEDTLS_DES_C)
+        target_compile_definitions(mbedcrypto PUBLIC MBEDTLS_DES_C)
+    endif()
+    if(MBEDTLS_CAMELLIA_C)
+        target_compile_definitions(mbedcrypto PUBLIC MBEDTLS_CAMELLIA_C)
+    endif()
+    if(MBEDTLS_ARC4_C)
+        target_compile_definitions(mbedcrypto PUBLIC MBEDTLS_ARC4_C)
+    endif()
+    if(MBEDTLS_BLOWFISH_C)
+        target_compile_definitions(mbedcrypto PUBLIC MBEDTLS_BLOWFISH_C)
+    endif()
+    if(MBEDTLS_GCM_C)
+        target_compile_definitions(mbedcrypto PUBLIC MBEDTLS_GCM_C)
+    endif()
+    if(MBEDTLS_CCM_C)
+        target_compile_definitions(mbedcrypto PUBLIC MBEDTLS_CCM_C)
+    endif()
 
     install(TARGETS mbedtls mbedx509 mbedcrypto
             DESTINATION ${LIB_INSTALL_DIR}
